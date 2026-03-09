@@ -107,7 +107,7 @@ def dashboard():
     FROM logs
     WHERE status='falha'
     GROUP BY ip
-    HAVING total >= 15
+    HAVING total >= 20
     """)
     ataque = cur.fetchall()
 
