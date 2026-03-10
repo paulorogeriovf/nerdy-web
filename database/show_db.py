@@ -10,5 +10,7 @@ for row in cur.execute("SELECT * FROM users"):
 
 print("\nLOGS")
 
-for row in cur.execute("SELECT * FROM logs"):
+for row in cur.execute("SELECT * FROM logs ORDER BY data DESC LIMIT 10"):
     print(row)
+
+db.close()

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Login realizado</title>
+
+<link rel="stylesheet" href="/static/css/global.css">
+
+<style>
+
+body{
+background:#0f172a;
+color:white;
+font-family: 'Inter', sans-serif;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+padding:20px;
+}
+
+.container{
+width:100%;
+max-width:700px;
+text-align:center;
+}
+
+h1{
+font-size:2.2rem;
+margin-bottom:10px;
+}
+
+p{
+margin:10px 0;
+line-height:1.6;
+}
+
+.info{
+margin-top:25px;
+padding:25px;
+background:#1e293b;
+border-radius:12px;
+box-shadow:0 10px 30px rgba(0,0,0,0.4);
+}
+
+a{
+display:inline-block;
+margin-top:25px;
+padding:12px 25px;
+background:#22c55e;
+color:white;
+text-decoration:none;
+border-radius:8px;
+font-weight:600;
+transition:0.2s;
+}
+
+a:hover{
+background:#16a34a;
+}
+
+/* RESPONSIVO */
+
+@media (max-width:600px){
+
+h1{
+font-size:1.7rem;
+}
+
+.info{
+padding:18px;
+}
+
+p{
+font-size:0.95rem;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Parabéns, {{ usuario }}! 🎉</h1>
+
+<p>Seu login foi realizado com sucesso.</p>
+
+<div class="info">
+
+<p>
+Você foi o <strong>login número {{ total_logs }}</strong>
+registrado na plataforma.
+</p>
+
+<p>
+Seu acesso foi registrado com o IP:
+<strong>{{ ip }}</strong>
+</p>
+
+<p>
+Este evento gerou um <strong>log de segurança</strong>,
+que pode ser analisado por sistemas de detecção de ameaças.
+</p>
+
+<p>
+Cada tentativa de login na plataforma é registrada
+para identificar comportamentos suspeitos,
+como ataques de força bruta.
+</p>
+
+</div>
+
+<a href="/logout">Sair</a>
+
+</div>
+
+</body>
+</html>
