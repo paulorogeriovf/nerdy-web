@@ -1,157 +1,341 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Nerdy - Security Intelligence Platform</title>
-
-<link rel="stylesheet" href="/static/css/global.css">
-<link rel="stylesheet" href="/static/css/home.css">
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nerdy – Security Intelligence Platform</title>
+  <link rel="stylesheet" href="/static/css/global.css">
+  <link rel="stylesheet" href="/static/css/home.css">
+  <link rel="icon" href="/static/images/Logo_Nerdy_Ico2.jpg" type="image/jpeg">
 </head>
-
 <body>
 
-<header class="hero">
+<div class="grid-bg"></div>
 
-<div class="hero-content">
+<!-- ─── NAV ──────────────────────────────────── -->
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">
+    <img src="/static/images/Logo_Nerdy_Ico2.jpg" alt="Nerdy" class="logo">
+    <span class="nav-logo-text">NERDY//SEC</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#sobre">Sobre</a></li>
+    <li><a href="#fluxo">Fluxo</a></li>
+    <li><a href="#tecnologias">Stack</a></li>
+    <li><a href="#funcionalidades">Features</a></li>
+    <li><a href="#alertas">Alertas</a></li>
+  </ul>
+  <a href="/login" class="nav-cta">[ ACESSAR ]</a>
+</nav>
 
-<img src="/static/images/Logo_Nerdy.jpeg" class="logo">
+<!-- ─── HERO ──────────────────────────────────── -->
+<section id="hero">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
 
-<h2>Security Intelligence Platform</h2>
+  <span class="hero-badge">▸ SECURITY INTELLIGENCE PLATFORM</span>
 
-<a href="/login">
-<button class="login-btn">Entrar no sistema</button>
-</a>
+  <img src="/static/images/Logo_Nerdy.jpeg" alt="Nerdy" class="hero-logo">
 
-<p>
-Projeto de um Sistema inteligente de análise de logs com resposta automatizada baseada em criticidade visando a segurança de sua aplicação
-</p>
+  <h1>
+    Inteligência em
+    <span class="outline">Segurança Digital</span>
+  </h1>
 
-</div>
+  <p class="hero-desc">
+    Nerdy centraliza logs, analisa eventos em tempo real e transforma dados brutos
+    em insights acionáveis — com resposta automatizada por IA.
+  </p>
 
-</header>
+  <div class="hero-actions">
+    <a href="/login" class="hero-btn-primary">Acessar a Plataforma →</a>
+    <a href="#sobre" class="hero-btn-ghost">Saiba mais</a>
+  </div>
 
-
-<section class="section">
-
-<h2>Fluxo Detalhado de Processamento</h2>
-
-<div class="grid">
-
-<div class="card">
-<h3>🤖 Mini Mim (Agent)</h3>
-<p>Roda como serviço no sistema operacional e coleta logs SSH.</p>
-</div>
-
-<div class="card">
-<h3>🔐 Servidor SSH</h3>
-<p>Recebe logs e realiza leitura incremental conforme novos eventos acontecem.</p>
-</div>
-
-<div class="card">
-<h3>📊 Análise de Log</h3>
-<p>Processamento em Python utilizando RegEx para parsing dos logs.</p>
-</div>
-
-<div class="card">
-<h3>🔍 Elastic Search</h3>
-<p>Busca padrões anormais de usuários e IPs fora do comportamento comum.</p>
-</div>
-
-<div class="card">
-<h3>🧠 LLM (IA)</h3>
-<p>Analisa contexto crítico e sugere ou executa respostas automáticas.</p>
-</div>
-
-</div>
-
+  <div class="hero-ticker">
+    <div class="ticker-item">
+      <div class="ticker-dot dot-green"></div>
+      <span>Sistema Online</span>
+    </div>
+    <div class="ticker-item">
+      <div class="ticker-dot dot-green"></div>
+      <span>Logs Ativos</span>
+    </div>
+    <div class="ticker-item">
+      <div class="ticker-dot dot-cyan"></div>
+      <span>IA Ativa</span>
+    </div>
+    <div class="ticker-item">
+      <div class="ticker-dot dot-amber"></div>
+      <span>Brute Force Detector</span>
+    </div>
+  </div>
 </section>
 
+<!-- ─── SOBRE ─────────────────────────────────── -->
+<section id="sobre">
+  <div class="section-inner">
+    <div class="sobre-layout">
+      <div class="reveal">
+        <p class="section-label">// 01 — Sobre</p>
+        <h2 class="section-title">Segurança que<br>pensa por você</h2>
+        <p class="section-desc">
+          A Nerdy é uma plataforma de Security Intelligence focada em monitoramento
+          contínuo, análise profunda de logs SSH e resposta automatizada a incidentes —
+          trazendo visibilidade total ao que acontece na sua infraestrutura.
+        </p>
+        <a href="#fluxo" class="hero-btn-ghost">Ver como funciona</a>
+      </div>
 
-<section class="section dark">
-
-<h2>🚨 Contextos Críticos</h2>
-
-<div class="grid">
-
-<div class="card">
-<h3>Password Accepted</h3>
-<p>Detecção de login bem-sucedido suspeito.</p>
-</div>
-
-<div class="card">
-<h3>Score > 7</h3>
-<p>Nível de risco elevado.</p>
-</div>
-
-<div class="card">
-<h3>Score > 10</h3>
-<p>Nível de risco crítico com resposta automatizada.</p>
-</div>
-
-</div>
-
+      <div class="stat-grid reveal" style="transition-delay:0.15s">
+        <div class="stat-tile">
+          <div class="stat-val">24/7</div>
+          <div class="stat-lbl">Monitoramento contínuo</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-val">0ms</div>
+          <div class="stat-lbl">Latência de detecção</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-val">IA</div>
+          <div class="stat-lbl">Resposta automatizada</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-val">100%</div>
+          <div class="stat-lbl">Logs auditados</div>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
+<hr class="divider">
 
-<section class="section">
+<!-- ─── FLUXO ─────────────────────────────────── -->
+<section id="fluxo">
+  <div class="section-inner">
+    <p class="section-label reveal">// 02 — Arquitetura</p>
+    <h2 class="section-title reveal">Fluxo de Processamento</h2>
+    <p class="section-desc reveal">Pipeline completo, do agente coleta ao insight da IA.</p>
 
-<h2>🔧 Tecnologias Atuais</h2>
-
-<div class="grid">
-
-<div class="card">Python</div>
-<div class="card">RegEx</div>
-<div class="card">YAML</div>
-<div class="card">SSH Logs</div>
-
-</div>
-
+    <div class="pipeline reveal">
+      <div class="pipe-step">
+        <span class="pipe-icon">🤖</span>
+        <div class="pipe-num">STEP 01</div>
+        <div class="pipe-title">Mini Mim Agent</div>
+        <div class="pipe-desc">Serviço no SO que coleta logs SSH em tempo real.</div>
+      </div>
+      <div class="pipe-step">
+        <span class="pipe-icon">🔐</span>
+        <div class="pipe-num">STEP 02</div>
+        <div class="pipe-title">SSH Server</div>
+        <div class="pipe-desc">Leitura incremental conforme novos eventos ocorrem.</div>
+      </div>
+      <div class="pipe-step">
+        <span class="pipe-icon">📊</span>
+        <div class="pipe-num">STEP 03</div>
+        <div class="pipe-title">Análise de Log</div>
+        <div class="pipe-desc">Parsing via Python + RegEx para extração de padrões.</div>
+      </div>
+      <div class="pipe-step">
+        <span class="pipe-icon">🔍</span>
+        <div class="pipe-num">STEP 04</div>
+        <div class="pipe-title">ElasticSearch</div>
+        <div class="pipe-desc">Detecção de anomalias em IPs e comportamentos.</div>
+      </div>
+      <div class="pipe-step">
+        <span class="pipe-icon">🧠</span>
+        <div class="pipe-num">STEP 05</div>
+        <div class="pipe-title">LLM (IA)</div>
+        <div class="pipe-desc">Contextualiza e executa respostas automáticas.</div>
+      </div>
+    </div>
+  </div>
 </section>
 
+<hr class="divider">
 
-<section class="section dark">
+<!-- ─── TECNOLOGIAS ───────────────────────────── -->
+<section id="tecnologias">
+  <div class="section-inner">
+    <p class="section-label reveal">// 03 — Stack</p>
+    <h2 class="section-title reveal">Tecnologias</h2>
+    <p class="section-desc reveal">Ferramentas sólidas hoje, poderosas amanhã.</p>
 
-<h2>⚡ Funcionalidades</h2>
-
-<div class="grid">
-
-<div class="card">Sistema de Criticidade</div>
-<div class="card">Pontuação de Ataques</div>
-<div class="card">Bloqueio Automático de IP</div>
-<div class="card">Honeypot</div>
-<div class="card">Alertas por Email</div>
-
-</div>
-
+    <div class="tech-grid">
+      <div class="tech-tile reveal">
+        <span class="tech-icon">🐍</span>
+        <div>
+          <div class="tech-name">Python</div>
+          <div class="tech-sub">Core / Backend</div>
+        </div>
+      </div>
+      <div class="tech-tile reveal" style="transition-delay:.05s">
+        <span class="tech-icon">🔧</span>
+        <div>
+          <div class="tech-name">Flask</div>
+          <div class="tech-sub">Web Framework</div>
+        </div>
+      </div>
+      <div class="tech-tile reveal" style="transition-delay:.1s">
+        <span class="tech-icon">📝</span>
+        <div>
+          <div class="tech-name">RegEx</div>
+          <div class="tech-sub">Log Parsing</div>
+        </div>
+      </div>
+      <div class="tech-tile reveal" style="transition-delay:.15s">
+        <span class="tech-icon">⚙️</span>
+        <div>
+          <div class="tech-name">YAML</div>
+          <div class="tech-sub">Configuração</div>
+        </div>
+      </div>
+      <div class="tech-tile reveal" style="transition-delay:.2s">
+        <span class="tech-icon">🔐</span>
+        <div>
+          <div class="tech-name">SSH Logs</div>
+          <div class="tech-sub">Fonte de dados</div>
+        </div>
+      </div>
+      <div class="tech-tile reveal" style="transition-delay:.25s">
+        <span class="tech-icon">🔍</span>
+        <div>
+          <div class="tech-name">ElasticSearch</div>
+          <div class="tech-sub">Análise de dados</div>
+          <span class="tech-soon">EM BREVE</span>
+        </div>
+      </div>
+      <div class="tech-tile reveal" style="transition-delay:.3s">
+        <span class="tech-icon">🧠</span>
+        <div>
+          <div class="tech-name">LLM Intelligence</div>
+          <div class="tech-sub">IA Generativa</div>
+          <span class="tech-soon">EM BREVE</span>
+        </div>
+      </div>
+      <div class="tech-tile reveal" style="transition-delay:.35s">
+        <span class="tech-icon">🤖</span>
+        <div>
+          <div class="tech-name">Ansible</div>
+          <div class="tech-sub">Automação</div>
+          <span class="tech-soon">EM BREVE</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
+<hr class="divider">
 
-<section class="section">
+<!-- ─── FUNCIONALIDADES ───────────────────────── -->
+<section id="funcionalidades">
+  <div class="section-inner">
+    <p class="section-label reveal">// 04 — Features</p>
+    <h2 class="section-title reveal">Funcionalidades</h2>
+    <p class="section-desc reveal">Tudo para manter sua infraestrutura protegida.</p>
 
-<h2>✨ Tecnologias Futuras</h2>
-
-<div class="grid">
-
-<div class="card">Dashboard Web</div>
-<div class="card">Ansible Automation</div>
-<div class="card">LLM Intelligence</div>
-<div class="card">Elastic Search</div>
-
-</div>
-
+    <div class="feat-grid">
+      <div class="feat-card reveal">
+        <span class="feat-icon">📋</span>
+        <div class="feat-title">Centralização de Logs</div>
+        <div class="feat-desc">Coleta e unifica logs SSH de múltiplos servidores em um único ponto de análise.</div>
+      </div>
+      <div class="feat-card reveal" style="transition-delay:.05s">
+        <span class="feat-icon">📈</span>
+        <div class="feat-title">Sistema de Criticidade</div>
+        <div class="feat-desc">Score automático de risco por evento, IP e usuário — de informativo a crítico.</div>
+      </div>
+      <div class="feat-card reveal" style="transition-delay:.1s">
+        <span class="feat-icon">🚫</span>
+        <div class="feat-title">Bloqueio Automático de IP</div>
+        <div class="feat-desc">Resposta imediata quando o score ultrapassa o limiar crítico configurado.</div>
+      </div>
+      <div class="feat-card reveal" style="transition-delay:.15s">
+        <span class="feat-icon">🍯</span>
+        <div class="feat-title">Honeypot</div>
+        <div class="feat-desc">Armadilhas digitais para atrair, registrar e identificar atacantes.</div>
+      </div>
+      <div class="feat-card reveal" style="transition-delay:.2s">
+        <span class="feat-icon">📧</span>
+        <div class="feat-title">Alertas por Email</div>
+        <div class="feat-desc">Notificações automáticas para eventos críticos entregues em tempo real.</div>
+      </div>
+      <div class="feat-card reveal" style="transition-delay:.25s">
+        <span class="feat-icon">🖥️</span>
+        <div class="feat-title">Dashboard Web</div>
+        <div class="feat-desc">Interface administrativa completa com logs, usuários e estatísticas.</div>
+      </div>
+    </div>
+  </div>
 </section>
 
+<hr class="divider">
 
-<footer>
+<!-- ─── ALERTAS ───────────────────────────────── -->
+<section id="alertas">
+  <div class="section-inner">
+    <p class="section-label reveal">// 05 — Detecção</p>
+    <h2 class="section-title reveal">Contextos Críticos</h2>
+    <p class="section-desc reveal">Três níveis de resposta baseados em score de ameaça.</p>
 
-<p>© Nerdy Security Platform</p>
+    <div class="alert-grid">
+      <div class="alert-tile info reveal">
+        <span class="alert-pill">NÍVEL 1 — MONITORADO</span>
+        <div class="alert-title">Password Accepted</div>
+        <div class="alert-desc">Login bem-sucedido registrado e analisado. IP, usuário e horário são pontuados automaticamente.</div>
+      </div>
+      <div class="alert-tile warn reveal" style="transition-delay:.1s">
+        <span class="alert-pill">NÍVEL 2 — ALERTA</span>
+        <div class="alert-title">Score &gt; 7</div>
+        <div class="alert-desc">Nível de risco elevado. O administrador é notificado e o evento é marcado para revisão.</div>
+      </div>
+      <div class="alert-tile crit reveal" style="transition-delay:.2s">
+        <span class="alert-pill">NÍVEL 3 — CRÍTICO</span>
+        <div class="alert-title">Score &gt; 10</div>
+        <div class="alert-desc">Resposta automatizada imediata: bloqueio de IP, notificação de emergência e log para auditoria.</div>
+      </div>
+    </div>
+  </div>
+</section>
 
+<!-- ─── CTA ───────────────────────────────────── -->
+<section id="cta">
+  <div class="section-inner">
+    <div class="cta-wrap reveal">
+      <h2>Pronto para proteger<br>sua infraestrutura?</h2>
+      <p>Acesse a plataforma Nerdy e tenha visibilidade total sobre eventos de segurança — em tempo real.</p>
+      <a href="/login" class="hero-btn-primary">Acessar Nerdy →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ────────────────────────────────── -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span class="footer-brand">NERDY//SEC</span>
+    <span class="footer-copy">© 2025 Nerdy Security Platform. Todos os direitos reservados.</span>
+  </div>
 </footer>
+
+<script>
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Shrink nav on scroll
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.style.padding = window.scrollY > 60 ? '10px 6%' : '16px 6%';
+  });
+</script>
 
 </body>
 </html>

@@ -1,121 +1,201 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acesso Realizado – Nerdy Security</title>
+  <link rel="stylesheet" href="/static/css/global.css">
+  <link rel="icon" href="/static/images/Logo_Nerdy_Ico2.jpg" type="image/jpeg">
+  <style>
+    body {
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
 
-<title>Login realizado</title>
+    body::before {
+      content: '';
+      position: fixed;
+      width: 600px; height: 600px;
+      background: var(--green);
+      border-radius: 50%;
+      filter: blur(140px);
+      opacity: 0.05;
+      top: -150px; left: -150px;
+      pointer-events: none;
+    }
 
-<link rel="stylesheet" href="/static/css/global.css">
+    .card {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 560px;
+      background: var(--card);
+      border: 1px solid var(--border-lit);
+      border-radius: 18px;
+      padding: 48px 44px;
+      text-align: center;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+      animation: cardIn 0.5s ease both;
+    }
 
-<style>
+    @keyframes cardIn {
+      from { opacity:0; transform:translateY(16px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
 
-body{
-background:#0f172a;
-color:white;
-font-family: 'Inter', sans-serif;
-display:flex;
-justify-content:center;
-align-items:center;
-min-height:100vh;
-padding:20px;
-}
+    /* Top accent line */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 24px; right: 24px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--green), var(--accent));
+      border-radius: 0 0 4px 4px;
+    }
 
-.container{
-width:100%;
-max-width:700px;
-text-align:center;
-}
+    .success-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      display: block;
+      animation: iconBounce 0.6s ease 0.2s both;
+    }
+    @keyframes iconBounce {
+      0%  { transform: scale(0.5); opacity:0; }
+      70% { transform: scale(1.1); }
+      100%{ transform: scale(1); opacity:1; }
+    }
 
-h1{
-font-size:2.2rem;
-margin-bottom:10px;
-}
+    h1 {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+    }
 
-p{
-margin:10px 0;
-line-height:1.6;
-}
+    .sub {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      margin-bottom: 32px;
+    }
 
-.info{
-margin-top:25px;
-padding:25px;
-background:#1e293b;
-border-radius:12px;
-box-shadow:0 10px 30px rgba(0,0,0,0.4);
-}
+    .info-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
 
-a{
-display:inline-block;
-margin-top:25px;
-padding:12px 25px;
-background:#22c55e;
-color:white;
-text-decoration:none;
-border-radius:8px;
-font-weight:600;
-transition:0.2s;
-}
+    .info-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      text-align: left;
+    }
 
-a:hover{
-background:#16a34a;
-}
+    .info-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
 
-/* RESPONSIVO */
+    .info-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
 
-@media (max-width:600px){
+    .info-value {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 600;
+    }
 
-h1{
-font-size:1.7rem;
-}
+    .info-value.accent { color: var(--accent); }
+    .info-value.green  { color: var(--green); }
 
-.info{
-padding:18px;
-}
+    .logout-btn {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--red);
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.25);
+      padding: 12px 28px;
+      border-radius: var(--radius);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: all 0.2s;
+    }
+    .logout-btn:hover {
+      background: rgba(239,68,68,0.15);
+      border-color: var(--red);
+    }
 
-p{
-font-size:0.95rem;
-}
-
-}
-
-</style>
+    @media (max-width: 480px) {
+      .card { padding: 36px 24px; }
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="container">
+<div class="grid-bg"></div>
 
-<h1>Parabéns, {{ usuario }}! 🎉</h1>
+<div class="card">
 
-<p>Seu login foi realizado com sucesso.</p>
+  <span class="success-icon">✅</span>
+  <h1>Olá, {{ usuario }}!</h1>
+  <div class="sub">// ACESSO AUTENTICADO COM SUCESSO</div>
 
-<div class="info">
+  <div class="info-grid">
 
-<p>
-Você foi o <strong>login número {{ total_logs }}</strong>
-registrado na plataforma.
-</p>
+    <div class="info-row">
+      <span class="info-icon">📋</span>
+      <div>
+        <div class="info-label">Registro de acesso</div>
+        <div class="info-value green">Login nº {{ total_logs }} na plataforma</div>
+      </div>
+    </div>
 
-<p>
-Seu acesso foi registrado com o IP:
-<strong>{{ ip }}</strong>
-</p>
+    <div class="info-row">
+      <span class="info-icon">🌐</span>
+      <div>
+        <div class="info-label">Endereço IP registrado</div>
+        <div class="info-value accent">{{ ip }}</div>
+      </div>
+    </div>
 
-<p>
-Este evento gerou um <strong>log de segurança</strong>,
-que pode ser analisado por sistemas de detecção de ameaças.
-</p>
+    <div class="info-row">
+      <span class="info-icon">🔐</span>
+      <div>
+        <div class="info-label">Evento de segurança</div>
+        <div class="info-value">Log de segurança gerado e armazenado para análise</div>
+      </div>
+    </div>
 
-<p>
-Cada tentativa de login na plataforma é registrada
-para identificar comportamentos suspeitos,
-como ataques de força bruta.
-</p>
+    <div class="info-row">
+      <span class="info-icon">🛡️</span>
+      <div>
+        <div class="info-label">Monitoramento ativo</div>
+        <div class="info-value">Tentativas são analisadas para detectar comportamentos suspeitos</div>
+      </div>
+    </div>
 
-</div>
+  </div>
 
-<a href="/logout">Sair</a>
+  <a href="/logout" class="logout-btn">[ SAIR DO SISTEMA ]</a>
 
 </div>
 

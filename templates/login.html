@@ -1,47 +1,58 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login</title>
-
-<!-- CSS Global -->
-<link rel="stylesheet" href="/static/css/global.css">
-<!-- CSS do Login -->
-<link rel="stylesheet" href="/static/css/login.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login – Nerdy Security</title>
+  <link rel="stylesheet" href="/static/css/global.css">
+  <link rel="stylesheet" href="/static/css/login.css">
+  <link rel="icon" href="/static/images/Logo_Nerdy_Ico2.jpg" type="image/jpeg">
 </head>
-<body>
+<body class="auth-page">
 
-<div class="login-box">
+<div class="grid-bg"></div>
 
-    <h2>Login</h2>
+<div class="auth-card">
 
-    {% if erro %}
-    <p style="color:red;">{{ erro }}</p>
-    {% endif %}
+  <div class="auth-brand">
+    <img src="/static/images/Logo_Nerdy_Ico2.jpg" alt="Nerdy">
+    <span class="auth-brand-text">NERDY//SEC</span>
+  </div>
 
-    <form method="POST">
+  <div class="auth-title">Entrar na plataforma</div>
+  <div class="auth-subtitle">// SECURITY INTELLIGENCE DASHBOARD</div>
 
-        <input name="usuario" placeholder="Usuário" required>
+  {% if erro %}
+  <div class="auth-error">⚠ {{ erro }}</div>
+  {% endif %}
 
-        <div class="senha-box">
-            <input type="password" id="senha" name="senha" placeholder="Senha" required>
-            <button type="button" onclick="mostrar()">👁</button>
-        </div>
+  <form method="POST" class="auth-form">
 
-        <button type="submit">Entrar</button>
-    </form>
+    <div class="form-field">
+      <label for="usuario">Usuário</label>
+      <input type="text" id="usuario" name="usuario" placeholder="seu_usuario" required autocomplete="username">
+    </div>
+
+    <div class="form-field">
+      <label for="senha">Senha</label>
+      <div class="pass-wrap">
+        <input type="password" id="senha" name="senha" placeholder="••••••••" required autocomplete="current-password">
+        <button type="button" class="pass-toggle" onclick="togglePass()" aria-label="Mostrar senha">👁</button>
+      </div>
+    </div>
+
+    <button type="submit" class="auth-submit">[ AUTENTICAR ]</button>
+
+  </form>
+
+  <a href="/" class="auth-back">← Voltar ao início</a>
+
 </div>
 
 <script>
-function mostrar() {
-    let s = document.getElementById("senha");
-    if (s.type === "password") {
-        s.type = "text";
-    } else {
-        s.type = "password";
-    }
+function togglePass() {
+  const s = document.getElementById('senha');
+  s.type = s.type === 'password' ? 'text' : 'password';
 }
 </script>
 

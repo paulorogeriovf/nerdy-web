@@ -1,242 +1,233 @@
 <!DOCTYPE html>
 <html lang="pt">
-
 <head>
-
-<meta charset="UTF-8">
-<title>Nerdy Security Dashboard</title>
-
-<link rel="stylesheet" href="/static/css/global.css">
-<link rel="stylesheet" href="/static/css/dashboard.css">
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard – Nerdy Security</title>
+  <link rel="stylesheet" href="/static/css/global.css">
+  <link rel="stylesheet" href="/static/css/dashboard.css">
+  <link rel="icon" href="/static/images/Logo_Nerdy_Ico2.jpg" type="image/jpeg">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+<body class="dash-page">
 
-<body>
+<div class="grid-bg"></div>
 
-<div class="header">
+<!-- ─── TOPBAR ────────────────────────────────── -->
+<header class="topbar">
+  <a href="/" class="topbar-brand">
+    <img src="/static/images/Logo_Nerdy_Ico2.jpg" alt="Nerdy" class="logo">
+    <span>NERDY//SEC</span>
+  </a>
+  <div class="topbar-actions">
+    <span style="font-family:var(--mono);font-size:11px;color:var(--muted);">ADMIN</span>
+    <a href="/logout" class="btn btn-ghost">[ SAIR ]</a>
+  </div>
+</header>
 
-<div class="logo-area">
-<img src="/static/images/Logo_Nerdy.jpeg" class="logo">
-<h1>Nerdy Security Dashboard</h1>
-</div>
+<!-- ─── MAIN ──────────────────────────────────── -->
+<main class="dash-layout z1">
 
-<a href="/logout">
-<button>Sair</button>
-</a>
+  <!-- Page header -->
+  <div class="dash-header">
+    <div class="dash-title">
+      <span>// PAINEL DE CONTROLE</span>
+      Security Dashboard
+    </div>
+    <a href="/reset_logs" class="btn-reset">🗑 Resetar Logs</a>
+  </div>
 
-</div>
+  <!-- Stats row -->
+  <div class="stats-row">
+    <div class="stat-card total">
+      <div class="stat-label">Total de Logs</div>
+      <div class="stat-value">{{ total_logs }}</div>
+    </div>
+    <div class="stat-card sucesso">
+      <div class="stat-label">Acessos com Sucesso</div>
+      <div class="stat-value">{{ sucessos }}</div>
+    </div>
+    <div class="stat-card falha">
+      <div class="stat-label">Tentativas Falhas</div>
+      <div class="stat-value">{{ falhas }}</div>
+    </div>
+  </div>
 
+  <!-- Brute force alert -->
+  {% if alerta %}
+  <div class="alerta">
+    ⚠ POSSÍVEL BRUTE FORCE DETECTADO — IPs com ≥ 20 tentativas falhas identificados
+  </div>
+  {% endif %}
 
-<div class="stats">
+  <!-- Chart -->
+  <div class="chart-box">
+    <h2>Distribuição de Tentativas de Login</h2>
+    <div class="chart-inner">
+      <canvas id="graficoAtaques"></canvas>
+    </div>
+  </div>
 
-<div class="card">
-<h3>Total Logs</h3>
-<p>{{total_logs}}</p>
-</div>
+  <!-- IPs mais ativos -->
+  <div class="box">
+    <div class="box-header">
+      <span class="box-title">IPs mais ativos</span>
+    </div>
+    <div class="box-body">
+      <table>
+        <thead>
+          <tr>
+            <th>Endereço IP</th>
+            <th>Tentativas</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ip in ips %}
+          <tr>
+            <td class="ip-cell">{{ ip[0] }}</td>
+            <td>
+              <span class="badge badge-warn">{{ ip[1] }}</span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-<div class="card">
-<h3>Sucessos</h3>
-<p>{{sucessos}}</p>
-</div>
+  <!-- Logs recentes -->
+  <div class="box">
+    <div class="box-header">
+      <span class="box-title">Logs recentes</span>
+      <div class="live-badge">
+        <div class="live-dot"></div>
+        AO VIVO
+      </div>
+    </div>
+    <div class="box-body">
+      <table id="logs">
+        <thead>
+          <tr>
+            <th>Usuário</th>
+            <th>IP</th>
+            <th>Data / Hora</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in logs %}
+          <tr>
+            <td>{{ log[1] }}</td>
+            <td class="ip-cell">{{ log[2] }}</td>
+            <td style="font-family:var(--mono);font-size:11px;color:var(--muted)">{{ log[3] }}</td>
+            <td>
+              {% if log[4] == 'sucesso' %}
+              <span class="badge badge-success">sucesso</span>
+              {% else %}
+              <span class="badge badge-danger">falha</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-<div class="card">
-<h3>Falhas</h3>
-<p>{{falhas}}</p>
-</div>
+  <!-- Usuários -->
+  <div class="box">
+    <div class="box-header">
+      <span class="box-title">Usuários cadastrados</span>
+      <a href="/register" class="btn btn-ghost" style="font-size:11px;padding:8px 16px;">+ Novo usuário</a>
+    </div>
+    <div class="box-body">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Usuário</th>
+            <th>IP</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+          <tr>
+            <td style="font-family:var(--mono);color:var(--muted);font-size:11px">{{ user[0] }}</td>
+            <td>{{ user[1] }}</td>
+            <td style="font-family:var(--mono);font-size:12px">{{ user[2] }}</td>
+            <td class="ip-cell">{{ user[4] }}</td>
+            <td>
+              <a href="/delete_user/{{ user[0] }}" class="btn-reset" style="font-size:10px;padding:6px 12px;">Remover</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-</div>
+</main>
 
-
-<div class="grafico">
-
-<h2>Gráfico de Tentativas de Login</h2>
-
-<canvas id="graficoAtaques"></canvas>
-
-</div>
-
-
-{% if alerta %}
-
-<div class="alerta">
-⚠ POSSÍVEL BRUTE FORCE DETECTADO
-</div>
-
-{% endif %}
-
-
-<div class="box">
-
-<h2>IPs mais ativos</h2>
-
-<table>
-
-<tr>
-<th>IP</th>
-<th>Tentativas</th>
-</tr>
-
-{% for ip in ips %}
-
-<tr>
-<td>{{ip[0]}}</td>
-<td>{{ip[1]}}</td>
-</tr>
-
-{% endfor %}
-
-</table>
-
-</div>
-
-
-<div class="box">
-
-<h2>Logs recentes</h2>
-
-<table id="logs">
-
-<tr>
-<th>Usuário</th>
-<th>IP</th>
-<th>Data</th>
-<th>Status</th>
-</tr>
-
-{% for log in logs %}
-
-<tr>
-<td>{{log[1]}}</td>
-<td>{{log[2]}}</td>
-<td>{{log[3]}}</td>
-<td>{{log[4]}}</td>
-</tr>
-
-{% endfor %}
-
-</table>
-
-</div>
-
-
-<div class="box">
-
-<h2>Usuários</h2>
-
-<a href="/register">
-<button>Cadastrar usuário</button>
-</a>
-
-<table>
-
-<tr>
-<th>ID</th>
-<th>Nome</th>
-<th>Usuário</th>
-<th>IP</th>
-<th>Ação</th>
-</tr>
-
-{% for user in users %}
-
-<tr>
-
-<td>{{user[0]}}</td>
-<td>{{user[1]}}</td>
-<td>{{user[2]}}</td>
-<td>{{user[4]}}</td>
-
-<td>
-<a href="/delete_user/{{user[0]}}">
-<button>Remover</button>
-</a>
-</td>
-
-</tr>
-
-{% endfor %}
-
-</table>
-
-</div>
-
-<a href="/reset_logs" class="btn-reset">Resetar Logs</a>
-
-
+<!-- ─── SCRIPTS ───────────────────────────────── -->
 <script>
+// ── Live log update every 3s ──────────────────
+async function atualizarLogs() {
+  const r = await fetch('/logs_json');
+  const data = await r.json();
+  const tbody = document.querySelector('#logs tbody');
 
-async function atualizarLogs(){
-
-let r = await fetch("/logs_json")
-let data = await r.json()
-
-let tabela = document.getElementById("logs")
-
-let linhas = `
-<tr>
-<th>Usuário</th>
-<th>IP</th>
-<th>Data</th>
-<th>Status</th>
-</tr>
-`
-
-data.logs.forEach(l => {
-
-linhas += `
-<tr>
-<td>${l.usuario}</td>
-<td>${l.ip}</td>
-<td>${l.data}</td>
-<td>${l.status}</td>
-</tr>
-`
-
-})
-
-tabela.innerHTML = linhas
-
+  tbody.innerHTML = data.logs.map(l => `
+    <tr>
+      <td>${l.usuario}</td>
+      <td class="ip-cell">${l.ip}</td>
+      <td style="font-family:var(--mono);font-size:11px;color:var(--muted)">${l.data}</td>
+      <td>
+        ${l.status === 'sucesso'
+          ? '<span class="badge badge-success">sucesso</span>'
+          : '<span class="badge badge-danger">falha</span>'
+        }
+      </td>
+    </tr>
+  `).join('');
 }
+setInterval(atualizarLogs, 3000);
 
-setInterval(atualizarLogs,3000)
+// ── Chart ─────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function () {
+  const ctx = document.getElementById('graficoAtaques').getContext('2d');
+  const sucessos = Number('{{ sucessos }}');
+  const falhas   = Number('{{ falhas }}');
 
-</script>
-
-
-<script>
-
-document.addEventListener("DOMContentLoaded", function () {
-
-const ctx = document.getElementById("graficoAtaques").getContext("2d");
-
-const sucessos = Number("{{ sucessos }}");
-const falhas = Number("{{ falhas }}");
-
-new Chart(ctx, {
-
-type: "bar",
-
-data: {
-
-labels: ["Sucesso", "Falha"],
-
-datasets: [{
-label: "Tentativas de Login",
-data: [sucessos, falhas]
-}]
-
-},
-
-options: {
-responsive: true
-}
-
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Sucesso', 'Falha'],
+      datasets: [{
+        data: [sucessos, falhas],
+        backgroundColor: ['rgba(16,185,129,0.7)', 'rgba(239,68,68,0.7)'],
+        borderColor:     ['rgba(16,185,129,1)',   'rgba(239,68,68,1)'],
+        borderWidth: 2,
+        hoverOffset: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      cutout: '65%',
+      plugins: {
+        legend: {
+          labels: {
+            color: '#4a5568',
+            font: { family: "'IBM Plex Mono'", size: 11 },
+            padding: 20
+          }
+        }
+      }
+    }
+  });
 });
-
-});
-
 </script>
 
 </body>
