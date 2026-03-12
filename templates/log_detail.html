@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log #{{ log.id }} — Nerdy Security</title>
+  <link rel="stylesheet" href="/static/css/global.css">
+  <link rel="stylesheet" href="/static/css/dashboard.css">
+  <link rel="icon" href="/static/images/Logo_Nerdy_Ico2.jpg" type="image/jpeg">
+  <style>
+    /* ── PAGE ENTER ANIMATION ───────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-12px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes scanline {
+      0%   { top: 0; }
+      100% { top: 100%; }
+    }
+    @keyframes glitch {
+      0%,100% { clip-path: none; transform: none; }
+      92%     { clip-path: none; transform: none; }
+      93%     { clip-path: polygon(0 20%, 100% 20%, 100% 25%, 0 25%); transform: translateX(-3px); color: var(--red); }
+      94%     { clip-path: polygon(0 60%, 100% 60%, 100% 63%, 0 63%); transform: translateX(3px); color: var(--accent); }
+      95%     { clip-path: none; transform: none; }
+    }
+    @keyframes borderGlow {
+      0%,100% { box-shadow: 0 0 0 rgba(0,212,255,0); border-color: var(--border); }
+      50%     { box-shadow: 0 0 24px rgba(0,212,255,0.08); border-color: var(--border-lit); }
+    }
+
+    /* ── LAYOUT ─────────────────────────────── */
+    .detail-layout {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 28px 28px 80px;
+    }
+
+    /* ── BACK BUTTON ────────────────────────── */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      padding: 8px 0;
+      margin-bottom: 32px;
+      transition: color 0.2s;
+      animation: slideIn 0.4s ease both;
+    }
+    .back-btn:hover { color: var(--accent); }
+    .back-btn::before { content: '←'; font-size: 13px; }
+
+    /* ── HERO HEADER ────────────────────────── */
+    .log-hero {
+      margin-bottom: 32px;
+      animation: fadeUp 0.5s ease both;
+    }
+    .log-hero-eyebrow {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .log-hero-eyebrow::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border-lit), transparent);
+    }
+    .log-hero-title {
+      font-family: var(--mono);
+      font-size: clamp(28px, 5vw, 42px);
+      font-weight: 700;
+      line-height: 1;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      animation: glitch 6s ease infinite;
+    }
+    .log-hero-title .hash { color: var(--border-lit); }
+    .log-hero-title .log-id { color: var(--accent); }
+
+    .log-hero-meta {
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .log-hero-meta-item {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .log-hero-meta-item .dot {
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--border-lit);
+    }
+
+    /* ── STATUS BANNER ──────────────────────── */
+    .status-banner {
+      border-radius: var(--radius-lg);
+      padding: 20px 28px;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      animation: fadeUp 0.5s 0.1s ease both;
+      position: relative;
+      overflow: hidden;
+    }
+    .status-banner.sucesso {
+      background: rgba(16,185,129,0.06);
+      border: 1px solid rgba(16,185,129,0.25);
+    }
+    .status-banner.falha {
+      background: rgba(239,68,68,0.06);
+      border: 1px solid rgba(239,68,68,0.25);
+    }
+    .status-banner-scan {
+      position: absolute;
+      left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(0,212,255,0.3), transparent);
+      animation: scanline 3s linear infinite;
+      pointer-events: none;
+    }
+    .status-main {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .status-icon {
+      font-size: 28px;
+      line-height: 1;
+    }
+    .status-label-text {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .status-value-text {
+      font-family: var(--mono);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .status-banner.sucesso .status-value-text { color: var(--green); }
+    .status-banner.falha   .status-value-text { color: var(--red); }
+
+    .status-timestamp {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      text-align: right;
+    }
+    .status-timestamp strong {
+      display: block;
+      font-size: 13px;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    /* ── INFO GRID ──────────────────────────── */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+      animation: fadeUp 0.5s 0.15s ease both;
+    }
+    @media (max-width: 600px) { .info-grid { grid-template-columns: 1fr; } }
+
+    .info-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px 24px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      animation: borderGlow 4s ease infinite;
+    }
+    .info-card:hover {
+      border-color: var(--border-lit);
+      box-shadow: 0 0 20px rgba(0,212,255,0.05);
+    }
+    .info-card-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .info-card-label::before {
+      content: '';
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 4px var(--accent);
+      flex-shrink: 0;
+    }
+    .info-card-value {
+      font-family: var(--mono);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      word-break: break-all;
+    }
+    .info-card-value.accent { color: var(--accent); font-size: 17px; }
+    .info-card-value.muted  { color: var(--muted);  font-size: 13px; }
+
+    /* ── RAW LOG SECTION ────────────────────── */
+    .raw-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 20px;
+      animation: fadeUp 0.5s 0.2s ease both;
+    }
+    .raw-section-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .raw-section-title {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .raw-section-title::before {
+      content: '$';
+      color: var(--green);
+      font-size: 12px;
+    }
+    .copy-btn {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      background: transparent;
+      border: 1px solid var(--border-lit);
+      padding: 5px 12px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+    .copy-btn.copied { color: var(--green); border-color: var(--green); }
+
+    .raw-log-body {
+      padding: 24px;
+      background: var(--surface);
+      position: relative;
+    }
+    .raw-log-text {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.8;
+      word-break: break-all;
+      white-space: pre-wrap;
+    }
+
+    /* syntax highlights on raw log */
+    .raw-log-text .tok-key   { color: var(--muted); }
+    .raw-log-text .tok-val   { color: var(--accent); }
+    .raw-log-text .tok-date  { color: var(--amber); }
+    .raw-log-text .tok-host  { color: var(--green); }
+    .raw-log-text .tok-evt   { color: var(--red); }
+    .raw-log-text .tok-evt.ok{ color: var(--green); }
+    .raw-log-text .tok-ip    { color: var(--accent); }
+    .raw-log-text .tok-pid   { color: var(--purple); font-weight:600; }
+
+    /* ── PARSED FIELDS ──────────────────────── */
+    .parsed-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 20px;
+      animation: fadeUp 0.5s 0.25s ease both;
+    }
+    .parsed-section-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .parsed-section-title {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .parsed-section-title::before {
+      content: '//';
+      color: var(--accent);
+      font-size: 11px;
+    }
+    .parsed-rows {
+      font-family: var(--mono);
+    }
+    .parsed-row {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    .parsed-row:last-child { border-bottom: none; }
+    .parsed-row:hover { background: var(--card-hover); }
+    .parsed-key {
+      padding: 14px 24px;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-right: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+    }
+    .parsed-val {
+      padding: 14px 24px;
+      font-size: 12px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+    }
+    .parsed-val.accent { color: var(--accent); }
+    .parsed-val.green  { color: var(--green); }
+    .parsed-val.red    { color: var(--red); }
+    .parsed-val.amber  { color: var(--amber); }
+
+    @media (max-width: 500px) {
+      .parsed-row { grid-template-columns: 1fr; }
+      .parsed-key { border-right: none; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+      .parsed-val { padding-top: 6px; }
+      .detail-layout { padding: 16px 14px 60px; }
+    }
+  </style>
+</head>
+<body class="dash-page">
+
+<div class="grid-bg"></div>
+
+<!-- ─── TOPBAR ────────────────────────────────── -->
+<header class="topbar">
+  <a href="/" class="topbar-brand">
+    <img src="/static/images/Logo_Nerdy_Ico2.jpg" alt="Nerdy" class="logo">
+    <span>NERDY//SEC</span>
+  </a>
+  <div class="topbar-actions">
+    <span style="font-family:var(--mono);font-size:11px;color:var(--muted);">ADMIN</span>
+    <a href="/logout" class="btn btn-ghost">[ SAIR ]</a>
+  </div>
+</header>
+
+<!-- ─── MAIN ──────────────────────────────────── -->
+<main class="detail-layout">
+
+  <a href="/dashboard" class="back-btn">VOLTAR AO DASHBOARD</a>
+
+  <!-- Hero -->
+  <div class="log-hero">
+    <div class="log-hero-eyebrow">// REGISTRO DE ACESSO</div>
+    <div class="log-hero-title">
+      <span class="hash">LOG_</span><span class="log-id">{{ log.id }}</span>
+    </div>
+    <div class="log-hero-meta">
+      <div class="log-hero-meta-item">
+        <div class="dot"></div>
+        {{ log.data }}
+      </div>
+      <div class="log-hero-meta-item">
+        <div class="dot"></div>
+        {{ log.usuario }}
+      </div>
+      <div class="log-hero-meta-item">
+        <div class="dot"></div>
+        {{ log.ip }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Status banner -->
+  <div class="status-banner {{ log.status }}">
+    <div class="status-banner-scan"></div>
+    <div class="status-main">
+      <div class="status-icon">
+        {% if log.status == 'sucesso' %}✓{% else %}✗{% endif %}
+      </div>
+      <div>
+        <div class="status-label-text">Resultado do acesso</div>
+        <div class="status-value-text">
+          {% if log.status == 'sucesso' %}Acesso autorizado{% else %}Acesso negado{% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="status-timestamp">
+      <strong>{{ log.data }}</strong>
+      ID do registro: #{{ log.id }}
+    </div>
+  </div>
+
+  <!-- Info grid -->
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="info-card-label">Usuário</div>
+      <div class="info-card-value">{{ log.usuario }}</div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-label">Endereço IP</div>
+      <div class="info-card-value accent">{{ log.ip }}</div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-label">Data / Hora</div>
+      <div class="info-card-value muted">{{ log.data }}</div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-label">Status</div>
+      <div class="info-card-value">
+        {% if log.status == 'sucesso' %}
+          <span class="badge badge-success">sucesso</span>
+        {% else %}
+          <span class="badge badge-danger">falha</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Parsed fields -->
+  {% if parsed %}
+  <div class="parsed-section">
+    <div class="parsed-section-header">
+      <div class="parsed-section-title">Campos extraídos do log</div>
+    </div>
+    {% if parsed.date %}
+    <div class="parsed-row">
+      <div class="parsed-key">Timestamp</div>
+      <div class="parsed-val amber">{{ parsed.date }}</div>
+    </div>
+    {% endif %}
+    {% if parsed.host %}
+    <div class="parsed-row">
+      <div class="parsed-key">Host</div>
+      <div class="parsed-val green">{{ parsed.host }}</div>
+    </div>
+    {% endif %}
+    {% if parsed.process %}
+    <div class="parsed-row">
+      <div class="parsed-key">Processo / PID</div>
+      <div class="parsed-val">{{ parsed.process }}</div>
+    </div>
+    {% endif %}
+    {% if parsed.event %}
+    <div class="parsed-row">
+      <div class="parsed-key">Evento</div>
+      <div class="parsed-val {% if log.status == 'sucesso' %}green{% else %}red{% endif %}">{{ parsed.event }}</div>
+    </div>
+    {% endif %}
+    {% if parsed.user %}
+    <div class="parsed-row">
+      <div class="parsed-key">Usuário alvo</div>
+      <div class="parsed-val accent">{{ parsed.user }}</div>
+    </div>
+    {% endif %}
+    {% if parsed.ip %}
+    <div class="parsed-row">
+      <div class="parsed-key">IP de origem</div>
+      <div class="parsed-val accent">{{ parsed.ip }}</div>
+    </div>
+    {% endif %}
+    {% if parsed.port %}
+    <div class="parsed-row">
+      <div class="parsed-key">Porta</div>
+      <div class="parsed-val">{{ parsed.port }}</div>
+    </div>
+    {% endif %}
+    {% if parsed.method %}
+    <div class="parsed-row">
+      <div class="parsed-key">Método HTTP</div>
+      <div class="parsed-val">{{ parsed.method }}</div>
+    </div>
+    {% endif %}
+    {% if parsed.endpoint %}
+    <div class="parsed-row">
+      <div class="parsed-key">Endpoint</div>
+      <div class="parsed-val">{{ parsed.endpoint }}</div>
+    </div>
+    {% endif %}
+    {% if parsed.user_agent %}
+    <div class="parsed-row">
+      <div class="parsed-key">User-Agent</div>
+      <div class="parsed-val" style="font-size:11px;color:var(--muted)">{{ parsed.user_agent }}</div>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- Raw log -->
+  <div class="raw-section">
+    <div class="raw-section-header">
+      <div class="raw-section-title">Raw Log</div>
+      <button class="copy-btn" id="copyBtn" onclick="copyRaw()">copiar</button>
+    </div>
+    <div class="raw-log-body">
+      <div class="raw-log-text" id="rawLogText">{{ log.raw_log or '— sem dados brutos —' }}</div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ── Copy raw log ──────────────────────────────
+function copyRaw() {
+  const text = document.getElementById('rawLogText').innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '✓ copiado';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'copiar';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+// ── Syntax highlight raw log ──────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const el = document.getElementById('rawLogText');
+  if (!el) return;
+  let t = el.textContent;
+
+  // date prefix (e.g. "Mar 12 14:32:01")
+  t = t.replace(/^(\w{3}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2})/,
+    '<span class="tok-date">$1</span>');
+
+  // hostname
+  t = t.replace(/(nerdy-\S+|localhost)(?=\s)/,
+    '<span class="tok-host">$1</span>');
+
+  // process[pid]
+  t = t.replace(/(\w+\[\d+\])/,
+    '<span class="tok-pid">$1</span>');
+
+  // event string
+  t = t.replace(/(Accepted password|Failed password)/,
+    m => `<span class="tok-evt ${m.startsWith('Accepted') ? 'ok' : ''}">${m}</span>`);
+
+  // "for USER"
+  t = t.replace(/(for\s+)(\S+)/,
+    (_, p, u) => `<span class="tok-key">${p}</span><span class="tok-val">${u}</span>`);
+
+  // IP address
+  t = t.replace(/(\d{1,3}(?:\.\d{1,3}){3})/g,
+    '<span class="tok-ip">$1</span>');
+
+  // key=value pairs
+  t = t.replace(/(\w+=)("?[^"\s]+"?)/g,
+    '<span class="tok-key">$1</span><span class="tok-val">$2</span>');
+
+  el.innerHTML = t;
+});
+</script>
+
+</body>
+</html>

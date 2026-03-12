@@ -8,6 +8,35 @@
   <link rel="stylesheet" href="/static/css/dashboard.css">
   <link rel="icon" href="/static/images/Logo_Nerdy_Ico2.jpg" type="image/jpeg">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    /* ── Search input override ── */
+    #filtro-logs::placeholder { color: var(--muted); }
+
+    /* ── Leaflet dark theme override ── */
+    .leaflet-container { background: #03040a !important; font-family: var(--mono); }
+    .leaflet-tile { filter: brightness(0.22) saturate(0.4) hue-rotate(180deg); }
+    .leaflet-control-zoom a {
+      background: var(--card) !important;
+      color: var(--accent) !important;
+      border-color: var(--border-lit) !important;
+      font-family: var(--mono) !important;
+    }
+    .leaflet-control-zoom a:hover { background: var(--card-hover) !important; }
+    .leaflet-control-attribution { display: none !important; }
+
+    /* pulse marker animation */
+    @keyframes mapPulse {
+      0%   { transform: scale(1); opacity: 1; }
+      100% { transform: scale(3); opacity: 0; }
+    }
+    .marker-pulse {
+      border-radius: 50%;
+      position: absolute;
+      animation: mapPulse 1.4s ease-out forwards;
+    }
+  </style>
 </head>
 <body class="dash-page">
 
@@ -99,9 +128,19 @@
   <div class="box">
     <div class="box-header">
       <span class="box-title">Logs recentes</span>
-      <div class="live-badge">
-        <div class="live-dot"></div>
-        AO VIVO
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <div style="position:relative;">
+          <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:11px;color:var(--muted);pointer-events:none;">⌕</span>
+          <input type="text" id="filtro-logs" placeholder="filtrar por ip ou usuário..."
+            style="width:240px;padding:8px 12px 8px 30px;font-size:11px;background:var(--surface);border:1px solid var(--border-lit);border-radius:var(--radius);color:var(--text);font-family:var(--mono);outline:none;transition:border-color 0.2s;"
+            oninput="filtrarLogs()"
+            onfocus="this.style.borderColor='var(--accent)'"
+            onblur="this.style.borderColor='var(--border-lit)'">
+        </div>
+        <div class="live-badge">
+          <div class="live-dot"></div>
+          AO VIVO
+        </div>
       </div>
     </div>
     <div class="box-body">
@@ -112,25 +151,19 @@
             <th>IP</th>
             <th>Data / Hora</th>
             <th>Status</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
-          {% for log in logs %}
-          <tr>
-            <td>{{ log[1] }}</td>
-            <td class="ip-cell">{{ log[2] }}</td>
-            <td style="font-family:var(--mono);font-size:11px;color:var(--muted)">{{ log[3] }}</td>
-            <td>
-              {% if log[4] == 'sucesso' %}
-              <span class="badge badge-success">sucesso</span>
-              {% else %}
-              <span class="badge badge-danger">falha</span>
-              {% endif %}
-            </td>
-          </tr>
-          {% endfor %}
+          <!-- preenchido via JS -->
         </tbody>
       </table>
+    </div>
+    <div id="logs-footer" style="padding:16px 24px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+      <span id="logs-count" style="font-family:var(--mono);font-size:11px;color:var(--muted)"></span>
+      <button id="btn-ver-mais" class="btn btn-ghost" style="font-size:11px;padding:8px 16px;display:none;" onclick="expandirLogs()">
+        Ver todos os logs ↓
+      </button>
     </div>
   </div>
 
@@ -168,17 +201,65 @@
     </div>
   </div>
 
+  <!-- Mapa de acessos ao vivo -->
+  <div class="box" style="padding:0;overflow:hidden;">
+    <div class="box-header">
+      <span class="box-title">Mapa de acessos ao vivo</span>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;color:var(--green);">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);"></div>
+          Sucesso
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;color:var(--red);">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 6px var(--red);"></div>
+          Falha
+        </div>
+        <div class="live-badge">
+          <div class="live-dot"></div>
+          AO VIVO
+        </div>
+      </div>
+    </div>
+    <div id="mapa-wrapper" style="position:relative;height:480px;background:var(--surface);">
+      <div id="map" style="width:100%;height:100%;"></div>
+      <div id="mapa-overlay" style="display:none;position:absolute;inset:0;background:rgba(3,4,10,0.75);backdrop-filter:blur(4px);align-items:center;justify-content:center;flex-direction:column;gap:12px;z-index:999;">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:0.12em;">AGUARDANDO DADOS DE GEOLOCALIZAÇÃO</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--border-lit);letter-spacing:0.08em;">IPs locais não aparecem no mapa</div>
+      </div>
+    </div>
+    <div id="mapa-footer" style="padding:12px 24px;border-top:1px solid var(--border);display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <span id="mapa-count" style="font-family:var(--mono);font-size:11px;color:var(--muted);">0 pontos plotados</span>
+      <button onclick="limparMapa()" class="btn btn-ghost" style="font-size:10px;padding:5px 12px;margin-left:auto;">limpar mapa</button>
+    </div>
+  </div>
+
 </main>
 
 <!-- ─── SCRIPTS ───────────────────────────────── -->
 <script>
-// ── Live log update every 3s ──────────────────
-async function atualizarLogs() {
-  const r = await fetch('/logs_json');
-  const data = await r.json();
-  const tbody = document.querySelector('#logs tbody');
+// ════════════════════════════════════════════════
+//  LOGS — estado e renderização
+// ════════════════════════════════════════════════
+let todosLogs  = [];
+let logsFiltrados = [];
+let expandido  = false;
 
-  tbody.innerHTML = data.logs.map(l => `
+function filtrarLogs() {
+  const q = document.getElementById('filtro-logs').value.trim().toLowerCase();
+  logsFiltrados = q
+    ? todosLogs.filter(l => l.ip.toLowerCase().includes(q) || l.usuario.toLowerCase().includes(q))
+    : todosLogs;
+  expandido = false;
+  renderizarLogs();
+}
+
+function renderizarLogs() {
+  const tbody = document.querySelector('#logs tbody');
+  const lista = expandido ? logsFiltrados : logsFiltrados.slice(0, 10);
+  const btn   = document.getElementById('btn-ver-mais');
+  const count = document.getElementById('logs-count');
+
+  tbody.innerHTML = lista.map(l => `
     <tr>
       <td>${l.usuario}</td>
       <td class="ip-cell">${l.ip}</td>
@@ -186,17 +267,183 @@ async function atualizarLogs() {
       <td>
         ${l.status === 'sucesso'
           ? '<span class="badge badge-success">sucesso</span>'
-          : '<span class="badge badge-danger">falha</span>'
-        }
+          : '<span class="badge badge-danger">falha</span>'}
+      </td>
+      <td>
+        <a href="/log/${l.id}" class="btn btn-ghost"
+           style="font-size:10px;padding:5px 12px;white-space:nowrap;">
+          + detalhes
+        </a>
       </td>
     </tr>
   `).join('');
-}
-setInterval(atualizarLogs, 3000);
 
-// ── Chart ─────────────────────────────────────
+  const total = logsFiltrados.length;
+  count.textContent = expandido
+    ? `Exibindo todos os ${total} logs`
+    : `Exibindo ${Math.min(10, total)} de ${total} logs`;
+
+  if (total > 10 && !expandido) {
+    btn.style.display = 'inline-flex';
+    btn.textContent   = `Ver todos os ${total} logs ↓`;
+  } else if (expandido && total > 10) {
+    btn.style.display = 'inline-flex';
+    btn.textContent   = '↑ Recolher';
+  } else {
+    btn.style.display = 'none';
+  }
+}
+
+function expandirLogs() {
+  expandido = !expandido;
+  renderizarLogs();
+}
+
+// ════════════════════════════════════════════════
+//  MAPA — Leaflet + ip-api
+// ════════════════════════════════════════════════
+let mapaIniciado = false;
+let mapaObj      = null;
+let pontosPlotados = {};   // ip -> marker (evita duplicatas por sessão)
+let totalPontos  = 0;
+let ultimoLogId  = null;
+
+function iniciarMapa() {
+  if (mapaIniciado) return;
+  mapaIniciado = true;
+
+  mapaObj = L.map('map', {
+    center: [20, 0],
+    zoom: 2,
+    minZoom: 1,
+    maxZoom: 6,
+    zoomControl: true,
+    scrollWheelZoom: false,
+  });
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+  }).addTo(mapaObj);
+}
+
+async function geolocalizarIP(ip) {
+  // IPs privados/localhost: ignora
+  if (/^(127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|::1|localhost)/.test(ip)) {
+    return null;
+  }
+  try {
+    const r = await fetch(`https://ip-api.com/json/${ip}?fields=status,lat,lon,country,city`);
+    const d = await r.json();
+    if (d.status === 'success') return d;
+  } catch(_) {}
+  return null;
+}
+
+function criarIcone(status) {
+  const cor  = status === 'sucesso' ? '#10b981' : '#ef4444';
+  const glow = status === 'sucesso' ? 'rgba(16,185,129,0.5)' : 'rgba(239,68,68,0.5)';
+  return L.divIcon({
+    className: '',
+    html: `
+      <div style="position:relative;width:14px;height:14px;">
+        <div style="
+          width:14px;height:14px;border-radius:50%;
+          background:${cor};
+          box-shadow:0 0 10px ${glow}, 0 0 20px ${glow};
+          border:2px solid rgba(255,255,255,0.2);
+          position:relative;z-index:2;
+        "></div>
+        <div class="marker-pulse" style="
+          width:14px;height:14px;
+          background:${cor};
+          top:0;left:0;
+        "></div>
+      </div>`,
+    iconSize: [14, 14],
+    iconAnchor: [7, 7],
+  });
+}
+
+async function plotarNovosLogs(logs) {
+  if (!mapaObj) return;
+
+  // só processa logs mais novos que o último visto
+  const novos = ultimoLogId === null
+    ? logs.slice(0, 20)   // primeira carga: últimos 20
+    : logs.filter(l => l.id > ultimoLogId);
+
+  if (novos.length > 0) ultimoLogId = Math.max(...novos.map(l => l.id));
+
+  for (const l of novos) {
+    const chave = `${l.ip}_${l.status}`;
+    // mesmo IP+status já plotado? só faz o pulso visual
+    if (pontosPlotados[chave]) {
+      pontosPlotados[chave].setIcon(criarIcone(l.status));
+      continue;
+    }
+    const geo = await geolocalizarIP(l.ip);
+    if (!geo) continue;
+
+    const marker = L.marker([geo.lat, geo.lon], { icon: criarIcone(l.status) })
+      .bindPopup(`
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.8;min-width:160px;">
+          <div style="color:#00d4ff;font-weight:700;margin-bottom:4px;">${l.ip}</div>
+          <div style="color:#4a5568;">Usuário: <span style="color:#dde4f0">${l.usuario}</span></div>
+          <div style="color:#4a5568;">Local: <span style="color:#dde4f0">${geo.city}, ${geo.country}</span></div>
+          <div style="color:#4a5568;">Status: <span style="color:${l.status==='sucesso'?'#10b981':'#ef4444'}">${l.status}</span></div>
+          <div style="color:#4a5568;font-size:10px;margin-top:4px;">${l.data}</div>
+        </div>
+      `, { className: 'mapa-popup' })
+      .addTo(mapaObj);
+
+    pontosPlotados[chave] = marker;
+    totalPontos++;
+  }
+
+  document.getElementById('mapa-count').textContent =
+    `${totalPontos} ponto${totalPontos !== 1 ? 's' : ''} plotado${totalPontos !== 1 ? 's' : ''}`;
+
+  // mostra overlay se ainda 0 pontos reais
+  const overlay = document.getElementById('mapa-overlay');
+  overlay.style.display = totalPontos === 0 ? 'flex' : 'none';
+}
+
+function limparMapa() {
+  if (!mapaObj) return;
+  Object.values(pontosPlotados).forEach(m => mapaObj.removeLayer(m));
+  pontosPlotados = {};
+  totalPontos    = 0;
+  ultimoLogId    = null;
+  document.getElementById('mapa-count').textContent = '0 pontos plotados';
+  document.getElementById('mapa-overlay').style.display = 'flex';
+}
+
+// ════════════════════════════════════════════════
+//  LIVE UPDATE — polling a cada 3s
+// ════════════════════════════════════════════════
+async function atualizarDados() {
+  const r    = await fetch('/logs_json');
+  const data = await r.json();
+  todosLogs  = data.logs;
+
+  const q = document.getElementById('filtro-logs').value.trim().toLowerCase();
+  logsFiltrados = q
+    ? todosLogs.filter(l => l.ip.toLowerCase().includes(q) || l.usuario.toLowerCase().includes(q))
+    : todosLogs;
+
+  renderizarLogs();
+  await plotarNovosLogs(todosLogs);
+}
+
+// ════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', function () {
-  const ctx = document.getElementById('graficoAtaques').getContext('2d');
+  // Mapa
+  iniciarMapa();
+
+  // Chart
+  const ctx      = document.getElementById('graficoAtaques').getContext('2d');
   const sucessos = Number('{{ sucessos }}');
   const falhas   = Number('{{ falhas }}');
 
@@ -227,6 +474,26 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
   });
+
+  // Popup style inject
+  const style = document.createElement('style');
+  style.textContent = `
+    .mapa-popup .leaflet-popup-content-wrapper {
+      background: #0b0f1c;
+      border: 1px solid #1f2d47;
+      border-radius: 8px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.6);
+      padding: 0;
+    }
+    .mapa-popup .leaflet-popup-content { margin: 12px 14px; }
+    .mapa-popup .leaflet-popup-tip-container { display: none; }
+    .mapa-popup .leaflet-popup-close-button { color: #4a5568 !important; top: 6px !important; right: 8px !important; }
+  `;
+  document.head.appendChild(style);
+
+  // Inicia polling
+  atualizarDados();
+  setInterval(atualizarDados, 3000);
 });
 </script>
 
