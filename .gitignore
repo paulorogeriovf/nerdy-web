@@ -1,15 +1,34 @@
-# ambiente virtual
+# ─── Ambiente virtual ────────────────────────
 venv/
+.venv/
+env/
 
-# python cache
+# ─── Python ──────────────────────────────────
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
+*.pyd
+.Python
 
-# banco de dados
+# ─── Bancos de dados ─────────────────────────
 *.db
+*.sqlite
+*.sqlite3
 
-# variáveis de ambiente
+# ─── Variáveis de ambiente ───────────────────
 .env
+.env.*
 
-# sistema
+# ─── Sistema operacional ─────────────────────
 .DS_Store
+Thumbs.db
+desktop.ini
+
+# ─── IDEs e editores ─────────────────────────
+.vscode/
+.idea/
+*.suo
+*.user
+
+# ─── Logs do sistema ─────────────────────────
+*.log

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Controle – Nerdy Security</title>
+  <link rel="stylesheet" href="/static/css/global.css">
+  <link rel="stylesheet" href="/static/css/painel.css">
+  <link rel="icon" type="image/png" href="/static/images/Logo_Nerdy_Ico2.png">
+  <style>
+    /* ── Formulário de cadastro inline ── */
+    .form-slide {
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      animation: formDown 0.25s ease both;
+    }
+    @keyframes formDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .form-slide-inner {
+      padding: 28px 24px 24px;
+      max-width: 860px;
+    }
+    .form-slide-title {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      margin-bottom: 20px;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-group label {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .form-group input[type="text"],
+    .form-group input[type="password"] {
+      background: var(--card);
+      border: 1px solid var(--border-lit);
+      border-radius: var(--radius);
+      padding: 11px 14px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+    }
+    .form-group input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0,212,255,0.08);
+    }
+    .form-group input::placeholder { color: var(--muted); }
+
+    .pass-wrap { position: relative; }
+    .pass-wrap input { padding-right: 44px !important; }
+    .pass-toggle {
+      position: absolute; right: 10px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none;
+      color: var(--muted); cursor: pointer;
+      font-size: 15px; padding: 4px;
+      transition: color 0.2s;
+    }
+    .pass-toggle:hover { color: var(--accent); }
+
+    .form-check {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-top: 18px;
+    }
+    .form-check input[type="checkbox"] {
+      width: 16px; height: 16px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    .form-check label {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      cursor: pointer;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding-top: 8px;
+      grid-column: span 2;
+    }
+    @media (max-width: 640px) { .form-actions { grid-column: span 1; } }
+
+    .btn-cadastrar {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--bg);
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius);
+      padding: 11px 24px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-cadastrar::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.4s;
+    }
+    .btn-cadastrar:hover::after { transform: translateX(100%); }
+    .btn-cadastrar:hover {
+      opacity: 0.88;
+      box-shadow: 0 0 20px rgba(0,212,255,0.3);
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body class="dash-page">
+
+<div class="grid-bg"></div>
+
+<!-- ─── TOPBAR ────────────────────────────────── -->
+<header class="topbar">
+  <a href="/" class="topbar-brand">
+    <img src="/static/images/Logo_Nerdy_Ico2.png" alt="Nerdy" class="logo">
+    <span>NERDY//SEC</span>
+  </a>
+  <div class="topbar-actions">
+    <span style="font-family:var(--mono);font-size:11px;color:var(--muted);">ADMIN</span>
+    <a href="/logout" class="btn btn-ghost">[ SAIR ]</a>
+  </div>
+</header>
+
+<!-- ─── MAIN ──────────────────────────────────── -->
+<main class="dash-layout z1">
+
+  <!-- Page header -->
+  <div class="dash-header">
+    <div class="dash-title">
+      <span>// PAINEL DE CONTROLE</span>
+      Gerenciamento do Sistema
+    </div>
+    <a href="/reset_logs" class="btn-reset"
+       onclick="return confirm('Tem certeza? Todos os logs serão apagados.')">
+      🗑 Resetar Logs
+    </a>
+  </div>
+
+  <!-- Stats row -->
+  <div class="stats-row">
+    <div class="stat-card total">
+      <div class="stat-label">Total de Logs</div>
+      <div class="stat-value">{{ total_logs }}</div>
+    </div>
+    <div class="stat-card sucesso">
+      <div class="stat-label">Acessos com Sucesso</div>
+      <div class="stat-value">{{ sucessos }}</div>
+    </div>
+    <div class="stat-card falha">
+      <div class="stat-label">Tentativas Falhas</div>
+      <div class="stat-value">{{ falhas }}</div>
+    </div>
+  </div>
+
+  <!-- ─── USUÁRIOS ─────────────────────────────── -->
+  <div class="box">
+    <div class="box-header">
+      <span class="box-title">Usuários cadastrados</span>
+      <button class="btn btn-ghost" style="font-size:11px;padding:8px 16px;" onclick="toggleForm()">
+        + Novo usuário
+      </button>
+    </div>
+
+    <!-- Formulário inline de cadastro -->
+    <div id="form-cadastro" class="form-slide" style="display:none;">
+      <div class="form-slide-inner">
+        <div class="form-slide-title">// CADASTRAR NOVO USUÁRIO</div>
+        <form method="POST" action="/register" class="form-grid">
+
+          <div class="form-group">
+            <label>Nome completo *</label>
+            <input type="text" name="nome" placeholder="Nome Sobrenome" required>
+          </div>
+
+          <div class="form-group">
+            <label>Usuário *</label>
+            <input type="text" name="usuario" placeholder="nome_usuario" required>
+          </div>
+
+          <div class="form-group">
+            <label>Senha *</label>
+            <div class="pass-wrap">
+              <input type="password" id="nova-senha" name="senha" placeholder="••••••••" required>
+              <button type="button" class="pass-toggle" onclick="togglePassCad()">👁</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>IP Autorizado <span style="color:var(--muted);font-size:9px;">(opcional)</span></label>
+            <input type="text" name="ip" placeholder="192.168.0.1">
+          </div>
+
+          <div class="form-check">
+            <input type="checkbox" name="is_admin" id="is_admin">
+            <label for="is_admin">É administrador?</label>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-cadastrar">[ CADASTRAR USUÁRIO ]</button>
+            <button type="button" class="btn btn-ghost" onclick="toggleForm()">Cancelar</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- Tabela -->
+    <div class="box-body">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Usuário</th>
+            <th>IP Autorizado</th>
+            <th>Perfil</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+          <tr>
+            <td style="font-family:var(--mono);color:var(--muted);font-size:11px">{{ user[0] }}</td>
+            <td>{{ user[1] }}</td>
+            <td style="font-family:var(--mono);font-size:12px">{{ user[2] }}</td>
+            <td class="ip-cell">{{ user[4] or '—' }}</td>
+            <td>
+              {% if user[5] %}
+                <span class="badge badge-info">admin</span>
+              {% else %}
+                <span class="badge badge-warn">usuário</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if user[0] != 1 %}
+                <a href="/delete_user/{{ user[0] }}"
+                   onclick="return confirm('Remover {{ user[2] }}?')"
+                   class="btn-reset" style="font-size:10px;padding:6px 12px;">
+                  Remover
+                </a>
+              {% else %}
+                <span style="font-family:var(--mono);font-size:10px;color:var(--muted);">protegido</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ─── LOGS RECENTES ─────────────────────────── -->
+  <div class="box">
+    <div class="box-header">
+      <span class="box-title">Logs recentes</span>
+      <div class="live-badge">
+        <div class="live-dot"></div>
+        AO VIVO
+      </div>
+    </div>
+    <div class="box-body">
+      <table>
+        <thead>
+          <tr>
+            <th>Usuário</th>
+            <th>IP</th>
+            <th>Data / Hora</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in logs %}
+          <tr>
+            <td>{{ log[1] }}</td>
+            <td class="ip-cell">{{ log[2] }}</td>
+            <td style="font-family:var(--mono);font-size:11px;color:var(--muted)">{{ log[3] }}</td>
+            <td>
+              {% if log[4] == 'sucesso' %}
+                <span class="badge badge-success">sucesso</span>
+              {% else %}
+                <span class="badge badge-danger">falha</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<script>
+function toggleForm() {
+  const f = document.getElementById('form-cadastro');
+  f.style.display = f.style.display === 'none' ? 'block' : 'none';
+}
+function togglePassCad() {
+  const s = document.getElementById('nova-senha');
+  s.type = s.type === 'password' ? 'text' : 'password';
+}
+</script>
+
+</body>
+</html>

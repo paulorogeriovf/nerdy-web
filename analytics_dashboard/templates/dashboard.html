@@ -6,7 +6,7 @@
   <title>Dashboard – Nerdy Security</title>
   <link rel="stylesheet" href="/static/css/global.css">
   <link rel="stylesheet" href="/static/css/dashboard.css">
-  <link rel="icon" href="/static/images/Logo_Nerdy_Ico2.jpg" type="image/jpeg">
+  <link rel="icon" href="/static/images/Logo_Nerdy_Ico2.png" type="image/png">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -45,12 +45,11 @@
 <!-- ─── TOPBAR ────────────────────────────────── -->
 <header class="topbar">
   <a href="/" class="topbar-brand">
-    <img src="/static/images/Logo_Nerdy_Ico2.jpg" alt="Nerdy" class="logo">
+    <img src="/static/images/Logo_Nerdy_Ico2.png" alt="Nerdy" class="logo">
     <span>NERDY//SEC</span>
   </a>
   <div class="topbar-actions">
-    <span style="font-family:var(--mono);font-size:11px;color:var(--muted);">ADMIN</span>
-    <a href="/logout" class="btn btn-ghost">[ SAIR ]</a>
+    <span style="font-family:var(--mono);font-size:11px;color:var(--muted);">ANALYTICS</span>
   </div>
 </header>
 
@@ -164,40 +163,6 @@
       <button id="btn-ver-mais" class="btn btn-ghost" style="font-size:11px;padding:8px 16px;display:none;" onclick="expandirLogs()">
         Ver todos os logs ↓
       </button>
-    </div>
-  </div>
-
-  <!-- Usuários -->
-  <div class="box">
-    <div class="box-header">
-      <span class="box-title">Usuários cadastrados</span>
-      <a href="/register" class="btn btn-ghost" style="font-size:11px;padding:8px 16px;">+ Novo usuário</a>
-    </div>
-    <div class="box-body">
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Nome</th>
-            <th>Usuário</th>
-            <th>IP</th>
-            <th>Ação</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for user in users %}
-          <tr>
-            <td style="font-family:var(--mono);color:var(--muted);font-size:11px">{{ user[0] }}</td>
-            <td>{{ user[1] }}</td>
-            <td style="font-family:var(--mono);font-size:12px">{{ user[2] }}</td>
-            <td class="ip-cell">{{ user[4] }}</td>
-            <td>
-              <a href="/delete_user/{{ user[0] }}" class="btn-reset" style="font-size:10px;padding:6px 12px;">Remover</a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
     </div>
   </div>
 
