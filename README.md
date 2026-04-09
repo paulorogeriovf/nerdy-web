@@ -10,7 +10,7 @@ O projeto é dividido em **duas aplicações Flask independentes**:
 
 ```
 nerdy-web/
-├── client_app/               # Site do "cliente" — autenticação e gestão
+├── Aplicacao_Web/               # Site do "cliente" — autenticação e gestão
 │   ├── main.py
 │   ├── requirements.txt
 │   ├── database/
@@ -32,7 +32,7 @@ nerdy-web/
 │       ├── js/
 │       └── images/
 │
-├── analytics_dashboard/      # Dashboard de análise — logs e métricas
+├── Dashboard/      # Dashboard de análise — logs e métricas
 │   ├── main.py
 │   ├── requirements.txt
 │   ├── templates/
@@ -72,10 +72,10 @@ nerdy-web/
 
 ## 🚀 Como rodar
 
-### 1. Client App (porta 5000)
+### 1. Aplicacao_Web (porta 5000)
 
 ```bash
-cd client_app
+cd Aplicacao_Web
 
 # Criar e ativar o venv
 python -m venv venv
@@ -94,10 +94,10 @@ python main.py
 
 Acesse: **http://localhost:5000**
 
-### 2. Analytics Dashboard (porta 5001)
+### 2. Dashboard (porta 5001)
 
 ```bash
-cd analytics_dashboard
+cd dashboard
 
 # Criar e ativar o venv
 python -m venv venv
@@ -148,7 +148,7 @@ print("Senha alterada com sucesso!")
 
 ## 🧩 Funcionalidades
 
-### Client App
+### Aplicacao_Web
 - ✅ Login com rate limiting (bloqueio após 5 tentativas)
 - ✅ Senhas com hash bcrypt (nunca salvas em texto puro)
 - ✅ Painel de controle — cadastrar, listar e remover usuários
@@ -156,7 +156,7 @@ print("Senha alterada com sucesso!")
 - ✅ Envio automático de logs para o analytics via `POST /ingest`
 - ✅ Página de boas-vindas para usuário comum
 
-### Analytics Dashboard
+### Dashboard
 - ✅ Recebe logs via `POST /ingest`
 - ✅ Dashboard com gráfico doughnut (Chart.js)
 - ✅ Mapa de acessos ao vivo (Leaflet + ip-api) — funciona com IPs públicos
@@ -166,25 +166,6 @@ print("Senha alterada com sucesso!")
 - ✅ Detalhes completos do log com parsing do raw_log
 - ✅ Detecção de brute force (≥ 20 falhas por IP)
 - ✅ Top 5 IPs mais ativos
-
----
-
-## 🔧 Variáveis de ambiente
-
-### Client App
-
-| Variável            | Padrão                              | Descrição                       |
-|---------------------|-------------------------------------|---------------------------------|
-| `SECRET_KEY`        | `nerdy_secret_change_in_production` | Chave secreta do Flask          |
-| `DB_PATH`           | `database/nerdy.db`                 | Caminho do banco SQLite         |
-| `ANALYTICS_API_URL` | `http://localhost:5001/ingest`      | Endpoint do analytics dashboard |
-
-### Analytics Dashboard
-
-| Variável           | Padrão              | Descrição               |
-|--------------------|---------------------|-------------------------|
-| `DASHBOARD_SECRET` | `nerdy_dash_secret` | Chave secreta do Flask  |
-| `DASHBOARD_DB`     | `analytics.db`      | Caminho do banco SQLite |
 
 ---
 
@@ -205,7 +186,7 @@ print("Senha alterada com sucesso!")
 
 ## 📊 Endpoints
 
-### Client App (`:5000`)
+### Aplicacao_Web (`:5000`)
 
 | Método   | Rota                | Descrição                       |
 |----------|---------------------|---------------------------------|
@@ -220,7 +201,7 @@ print("Senha alterada com sucesso!")
 | GET      | `/check_block`      | Verificar bloqueio de IP (AJAX) |
 | GET      | `/logout`           | Encerrar sessão                 |
 
-### Analytics Dashboard (`:5001`)
+### Dashboard (`:5001`)
 
 | Método | Rota          | Descrição                        |
 |--------|---------------|----------------------------------|
@@ -261,5 +242,5 @@ O mapa usa a API pública `ip-api.com` para geolocalizar IPs.
 
 ## 👥 Projeto
 
-Desenvolvido para apresentação acadêmica — **Projeto Unip 202.**
+Desenvolvido para apresentação acadêmica — **Projeto Unip 2026**
 Plataforma: **Nerdy Security Intelligence**
